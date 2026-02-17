@@ -2,7 +2,7 @@ add_library(nlayout SHARED
         src/nlayout_mgmt.cpp
         include/nlayout/nlayout_types.h
         src/nlayout_internals.hpp
-        src/nlayout_core.cpp
+        src/nlayout_vm.cpp
         src/nlayout_extractors.cpp
         src/nlayout_hit_test.cpp
         include/nlayout/nlayout_err_list.h

@@ -45,3 +45,5 @@ file(COPY "${CMAKE_SOURCE_DIR}/assets/fonts" DESTINATION "${CMAKE_BINARY_DIR}")
 target_compile_definitions(nlayout_test PRIVATE
         ASSETS_DIR="${CMAKE_SOURCE_DIR}/assets"
 )
+
+add_subdirectory(lib/nmath)
