@@ -69,14 +69,29 @@ public:
     sk_sp<SkTypeface> tf = nullptr;
 
     if (g_tls_font_mgr)
-    {
+      {
       tf = g_tls_font_mgr->matchFamilyStyle(name.c_str(), skStyle);
+      if (!tf)
+        {
+        std::string lower_name = name;
+        std::ranges::transform(lower_name, lower_name.begin(), ::tolower);
+        tf = g_tls_font_mgr->matchFamilyStyle(lower_name.c_str(), skStyle);
+      }
+
+      if (!tf)
+        {
+        tf = g_tls_font_mgr->matchFamilyStyle(nullptr, skStyle);
+        if (tf)
+          {
+          std::cout << "[nmath] Info: Mapped '" << name << "' to system default font." << std::endl;
+        }
+      }
     }
 
     if (!tf)
-    {
+      {
       std::cerr << "[nmath] Warning: MicroTeX requested font '" << name
-                << "', falling back to Empty." << std::endl;
+                << "', and fallback failed. Using Empty." << std::endl;
       tf = SkTypeface::MakeEmpty();
     }
 

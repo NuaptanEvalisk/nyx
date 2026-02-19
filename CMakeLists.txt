@@ -46,4 +46,6 @@ target_compile_definitions(nlayout_test PRIVATE
         ASSETS_DIR="${CMAKE_SOURCE_DIR}/assets"
 )
 
+file(COPY "${CMAKE_SOURCE_DIR}/third_party/micro_tex/res" DESTINATION "${CMAKE_BINARY_DIR}")
+
 add_subdirectory(lib/nmath)

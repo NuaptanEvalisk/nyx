@@ -1,5 +1,8 @@
 find_package(tinyxml2 REQUIRED)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(POPPLER REQUIRED poppler-cpp)
+
 add_library(nmath SHARED
     src/nmath_internals.hpp
     src/nmath_mgmt.cpp
@@ -7,7 +10,9 @@ add_library(nmath SHARED
     include/nmath/nmath_err_list.h
     include/nmath/nmath_types.h
         src/nmath_microtex_skia.cpp
-        src/nmath_microtex.cpp)
+        src/nmath_microtex.cpp
+        src/nmath_lualatex_preload.cpp
+        src/nmath_lualatex.cpp)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(nmath PRIVATE
@@ -32,6 +37,8 @@ target_link_options(nmath PRIVATE "-Wl,-z,defs")
 target_include_directories(nmath PUBLIC include)
 target_include_directories(nmath PRIVATE src)
 target_include_directories(nmath PRIVATE tests)
+
+target_include_directories(nmath PRIVATE ${POPPLER_INCLUDE_DIRS})
 
 set(MICROTEX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/micro_tex")
 
@@ -58,4 +65,26 @@ endif()
 
 # we are using Skia m146.
 target_link_libraries(nmath PRIVATE skia)
-target_link_libraries(nmath PRIVATE microtex tinyxml2::tinyxml2)
+target_link_libraries(nmath PRIVATE microtex tinyxml2::tinyxml2 ${POPPLER_LIBRARIES})
+
+find_package(Threads REQUIRED)
+target_link_libraries(nmath PRIVATE Threads::Threads m)
+
+set_target_properties(nmath PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+set(NMATH_LATEX_ASSETS
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_fmt.tex"
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_head.tex"
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_tail.tex"
+)
+
+file(COPY ${NMATH_LATEX_ASSETS} DESTINATION "${CMAKE_BINARY_DIR}/assets/latex")
+
+add_executable(nmath_test_microtex tests/nmath_test_microtex.c)
+
+target_compile_options(nmath_test_microtex PRIVATE -O3 -march=native)
+target_link_libraries(nmath_test_microtex PRIVATE nmath)
+target_link_libraries(nmath_test_microtex PRIVATE stb_imagewrite)
+
+enable_testing()
+add_test(NAME nmath_demo_microtex COMMAND nmath_test_microtex)

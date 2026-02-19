@@ -22,12 +22,13 @@ extern "C"
                                           size_t buf_size,
                                           nmath_runtime_t runtime);
 
-  enum NMath_Error_Info nmath_render_quality(const char *formula, int width,
-                                             int height, uint32_t *pixels,
-                                             size_t buf_size,
+  enum NMath_Error_Info nmath_render_quality(const char *formula,
+                                             enum NMath_Formula_Type ft,
+                                             nmath_bitmap_t *bitmap,
+                                             nmath_geometry_t *geometry,
                                              nmath_runtime_t runtime);
 
-  enum NMath_Error_Info nmath_prepare_lualatex(nmath_runtime_t runtime);
+  enum NMath_Error_Info nmath_lualatex_precompile(nmath_runtime_t runtime);
 
   enum NMath_Error_Info nmath_initialize_microtex(nmath_runtime_t runtime);
 

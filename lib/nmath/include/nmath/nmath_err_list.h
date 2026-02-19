@@ -11,7 +11,13 @@ X(nmath_err_null_check) \
 X(nmath_err_file) \
 X(nmath_err_failed_alloc) \
 X(nmath_err_invalid_dimensions) \
-X(nmath_err_wrap_pixels_failure)
+X(nmath_err_wrap_pixels_failure) \
+X(nmath_err_lualatex_fmt_failure) \
+X(nmath_err_lualatex_fmt_missing) \
+X(nmath_err_cannot_read_parts) \
+X(nmath_err_lualatex_failure) \
+X(nmath_err_geom_extraction) \
+X(nmath_err_invalid_pdf)
 
 #define GENERATE_ENUM(ENUM) ENUM,
 enum NMath_Error_Info

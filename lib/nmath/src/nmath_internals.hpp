@@ -12,10 +12,23 @@
 #include <include/core/SkFontMgr.h>
 #include <include/core/SkRefCnt.h>
 
+#define NMATH_DEBUG_OUTPUTS
+#ifdef NMATH_DEBUG_OUTPUTS
+#include <iostream>
+#define debug_err_msg(msg) std::cerr << msg << std::endl << std::flush;
+#define debug_info_msg(msg) std::cout << msg << std::endl << std::flush;
+#else
+#define debug_err_msg(msg)
+#define debug_info_msg(msg)
+#endif
+
 struct nmath_runtime_internal
 {
   nmath_global_config_t globals;
   sk_sp<SkFontMgr> font_mgr;
+
+  std::string latex_head_content;
+  std::string latex_tail_content;
 };
 
 extern thread_local SkFontMgr *g_tls_font_mgr;

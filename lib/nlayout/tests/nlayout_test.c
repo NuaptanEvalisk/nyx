@@ -33,7 +33,6 @@ double get_ms(const struct timespec start, const struct timespec end)
 int main (void)
 {
   printf("NLayout Test Program.\n");
-  fflush(stdout);
 
   struct timespec t0, t1;
 
