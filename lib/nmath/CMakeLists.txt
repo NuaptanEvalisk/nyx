@@ -11,8 +11,8 @@ add_library(nmath SHARED
     include/nmath/nmath_types.h
         src/nmath_microtex_skia.cpp
         src/nmath_microtex.cpp
-        src/nmath_lualatex_preload.cpp
-        src/nmath_lualatex.cpp
+        src/nmath_latex_preload.cpp
+        src/nmath_latex.cpp
         src/nmath_latex_spawn.cpp)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
@@ -77,6 +77,7 @@ set(NMATH_LATEX_ASSETS
         "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_fmt.tex"
         "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_head.tex"
         "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_tail.tex"
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_mini_fmt.tex"
 )
 
 file(COPY ${NMATH_LATEX_ASSETS} DESTINATION "${CMAKE_BINARY_DIR}/assets/latex")
@@ -87,12 +88,12 @@ target_compile_options(nmath_test_microtex PRIVATE -O3 -march=native)
 target_link_libraries(nmath_test_microtex PRIVATE nmath)
 target_link_libraries(nmath_test_microtex PRIVATE stb_imagewrite)
 
-add_executable(nmath_test_lualatex tests/nmath_test_lualatex.c)
+add_executable(nmath_test_latex tests/nmath_test_latex.c)
 
-target_compile_options(nmath_test_lualatex PRIVATE -O3 -march=native)
-target_link_libraries(nmath_test_lualatex PRIVATE nmath)
-target_link_libraries(nmath_test_lualatex PRIVATE stb_imagewrite)
+target_compile_options(nmath_test_latex PRIVATE -O3 -march=native)
+target_link_libraries(nmath_test_latex PRIVATE nmath)
+target_link_libraries(nmath_test_latex PRIVATE stb_imagewrite)
 
 enable_testing()
 add_test(NAME nmath_demo_microtex COMMAND nmath_test_microtex)
-add_test(NAME nmath_demo_lualatex COMMAND nmath_test_lualatex)
+add_test(NAME nmath_demo_latex COMMAND nmath_test_latex)

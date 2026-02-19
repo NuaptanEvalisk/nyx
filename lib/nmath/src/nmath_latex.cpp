@@ -14,32 +14,6 @@
 
 #include <ctime>
 
-static bool extract_geometry_from_log(const std::string &log,
-                                      nmath_geometry_t *geo)
-{
-  std::ifstream log_file(log);
-  if (!log_file.is_open())
-  {
-    return false;
-  }
-
-  std::string line;
-  std::regex re(
-      "NGEO:\\s*w=([0-9.]+)\\s*pt,\\s*h=([0-9.]+)\\s*pt,\\s*d=([0-9.]+)\\s*pt");
-  std::smatch match;
-
-  while (std::getline(log_file, line))  {
-    if (std::regex_search(line, match, re))
-    {
-      geo->width = std::stof(match[1]);
-      geo->height = std::stof(match[2]);
-      geo->baseline = std::stof(match[3]);
-      return true;
-    }
-  }
-  return false;
-}
-
 static NMath_Error_Info nmath_render_pdf_to_bitmap(
     const char* pdf_path,
     float scale_factor,
@@ -96,12 +70,11 @@ inline double get_ms(const struct timespec start, const struct timespec end)
 enum NMath_Error_Info nmath_render_quality(const char *formula,
                                            const enum NMath_Formula_Type ft,
                                            nmath_bitmap_t *bitmap,
-                                           nmath_geometry_t *geometry,
                                            nmath_runtime_t runtime)
 {
   struct timespec t0, t1;
 
-  if (formula == nullptr || geometry == nullptr || runtime == nullptr)
+  if (formula == nullptr || runtime == nullptr)
   {
     return nmath_err_null_check;
   }
@@ -123,8 +96,18 @@ enum NMath_Error_Info nmath_render_quality(const char *formula,
   clock_gettime(CLOCK_MONOTONIC, &t1);
   std::cout << "Construction of mwe: " << get_ms(t0, t1) << " ms" << std::endl;
 
+  // routing
+  const std::string f(formula);
+  bool heavy = f.find("tikz") != std::string::npos ||
+               f.find("draw") != std::string::npos ||
+               f.find("includegraphics") != std::string::npos ||
+               f.find("color") != std::string::npos ||
+               f.find("xlongequal") != std::string::npos;
+
+  std::cout << "Routing: " << (heavy ? "heavy" : "mini") << std::endl;
+
   clock_gettime(CLOCK_MONOTONIC, &t0);
-  if (!nmath_spawn_pdflatex(runtime->latex_cmd_args))
+  if (!nmath_spawn_pdflatex(heavy ? runtime->latex_cmd_args : runtime->latex_cmd_mini_args))
   {
     return nmath_err_lualatex_failure;
   }

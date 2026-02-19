@@ -93,27 +93,36 @@ enum NMath_Error_Info nmath_runtime_create(const nmath_global_config_t *globals,
     return nmath_err_cannot_read_parts;
   }
 
-  runtime->tex_path += runtime->globals.lualatex_shm_dir;
+  runtime->tex_path += runtime->globals.latex_shm_dir;
   runtime->tex_path += "/";
-  runtime->tex_path += runtime->globals.lualatex_job_name;
+  runtime->tex_path += runtime->globals.latex_job_name;
   runtime->tex_path += ".tex";
 
-  runtime->out_pdf_path += runtime->globals.lualatex_shm_dir;
+  runtime->out_pdf_path += runtime->globals.latex_shm_dir;
   runtime->out_pdf_path += "/";
-  runtime->out_pdf_path += runtime->globals.lualatex_job_name;
+  runtime->out_pdf_path += runtime->globals.latex_job_name;
   runtime->out_pdf_path += ".pdf";
 
-  runtime->log_path += runtime->globals.lualatex_shm_dir;
+  runtime->log_path += runtime->globals.latex_shm_dir;
   runtime->log_path += "/";
-  runtime->log_path += runtime->globals.lualatex_job_name;
+  runtime->log_path += runtime->globals.latex_job_name;
   runtime->log_path += ".log";
 
   runtime->latex_cmd_args = {
-    std::string(runtime->globals.lualatex_exe_path),
+    std::string(runtime->globals.latex_exe_path),
     "-interaction=batchmode",
     "-halt-on-error",
-    "-fmt=" + std::string(runtime->globals.lualatex_dump_path),
-    "-output-directory=" + std::string(runtime->globals.lualatex_shm_dir),
+    "-fmt=" + std::string(runtime->globals.latex_dump_path),
+    "-output-directory=" + std::string(runtime->globals.latex_shm_dir),
+    runtime->tex_path
+  };
+
+  runtime->latex_cmd_mini_args = {
+    std::string(runtime->globals.latex_exe_path),
+    "-interaction=batchmode",
+    "-halt-on-error",
+    "-fmt=" + std::string(runtime->globals.latex_dump_mini_path),
+    "-output-directory=" + std::string(runtime->globals.latex_shm_dir),
     runtime->tex_path
   };
 

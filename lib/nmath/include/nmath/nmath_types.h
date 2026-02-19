@@ -18,15 +18,17 @@ extern "C"
 
   typedef struct
   {
-    char *lualatex_exe_path;
+    char *latex_exe_path;
     char *tex_head_path;
     char *tex_tail_path;
 
     char *tex_fmt_source_path;
-    char *lualatex_dump_path;
+    char *latex_dump_path;
+    char *tex_fmt_mini_path;
+    char *latex_dump_mini_path;
 
-    char *lualatex_shm_dir;
-    char *lualatex_job_name;
+    char *latex_shm_dir;
+    char *latex_job_name;
     float pdf_scale_factor;
 
     bool scan_system_fonts;

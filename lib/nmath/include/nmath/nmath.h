@@ -25,7 +25,6 @@ extern "C"
   enum NMath_Error_Info nmath_render_quality(const char *formula,
                                              enum NMath_Formula_Type ft,
                                              nmath_bitmap_t *bitmap,
-                                             nmath_geometry_t *geometry,
                                              nmath_runtime_t runtime);
 
   enum NMath_Error_Info nmath_lualatex_precompile(nmath_runtime_t runtime);

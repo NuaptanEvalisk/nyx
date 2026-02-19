@@ -35,6 +35,7 @@ struct nmath_runtime_internal
 
   std::string tex_path, out_pdf_path, log_path;
   std::vector<std::string> latex_cmd_args;
+  std::vector<std::string> latex_cmd_mini_args;
 
   poppler::page_renderer page_renderer;
 };
