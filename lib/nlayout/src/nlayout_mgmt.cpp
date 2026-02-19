@@ -53,9 +53,9 @@ NLayout_Error_Info nlayout_runtime_create(const nlayout_global_config_t *globals
     sizeof(nlayout_font_entry_t) * NLAYOUT_FONTS_ALLOWED);
 
   runtime->font_collection = sk_make_sp<skia::textlayout::FontCollection>();
-  auto scanner = SkFontScanner_Make_FreeType();
   if (globals->scan_os_fonts)
   {
+    auto scanner = SkFontScanner_Make_FreeType();
     runtime->font_mgr = SkFontMgr_New_FontConfig(nullptr, std::move(scanner));
   }
   else

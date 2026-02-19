@@ -31,6 +31,7 @@ target_include_directories(nlayout PUBLIC include)
 target_include_directories(nlayout PRIVATE src)
 target_include_directories(nlayout PRIVATE tests)
 
+# we are using Skia m146.
 target_link_libraries(nlayout PRIVATE skia)
 
 add_executable(nlayout_test tests/nlayout_test.c)

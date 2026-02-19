@@ -19,8 +19,6 @@ extern "C"
 
   typedef struct
   {
-    float dpi_x;
-    float dpi_y;
     int width;
     int height;
     float padding_left;
