@@ -12,7 +12,8 @@ add_library(nmath SHARED
         src/nmath_microtex_skia.cpp
         src/nmath_microtex.cpp
         src/nmath_lualatex_preload.cpp
-        src/nmath_lualatex.cpp)
+        src/nmath_lualatex.cpp
+        src/nmath_latex_spawn.cpp)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(nmath PRIVATE
@@ -86,5 +87,12 @@ target_compile_options(nmath_test_microtex PRIVATE -O3 -march=native)
 target_link_libraries(nmath_test_microtex PRIVATE nmath)
 target_link_libraries(nmath_test_microtex PRIVATE stb_imagewrite)
 
+add_executable(nmath_test_lualatex tests/nmath_test_lualatex.c)
+
+target_compile_options(nmath_test_lualatex PRIVATE -O3 -march=native)
+target_link_libraries(nmath_test_lualatex PRIVATE nmath)
+target_link_libraries(nmath_test_lualatex PRIVATE stb_imagewrite)
+
 enable_testing()
 add_test(NAME nmath_demo_microtex COMMAND nmath_test_microtex)
+add_test(NAME nmath_demo_lualatex COMMAND nmath_test_lualatex)

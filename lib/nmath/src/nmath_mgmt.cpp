@@ -18,6 +18,7 @@ static bool read_file_content(const char* path, std::string& out_content)
   std::ifstream file(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!file.is_open())
   {
+    debug_err_msg("Cannot open file: " << path);
     return false;
   }
 
@@ -35,6 +36,7 @@ static bool read_file_content(const char* path, std::string& out_content)
   {
     return true;
   }
+  debug_err_msg("Cannot read file: " << path);
   return false;
 }
 
@@ -48,7 +50,8 @@ enum NMath_Error_Info nmath_runtime_create(const nmath_global_config_t *globals,
 
   if (*rt == nullptr)
   {
-    *rt = static_cast<nmath_runtime_t>(malloc(sizeof(nmath_runtime_internal)));
+    // using malloc to allocate a C++ struct would cause segfault!
+    *rt = new (std::nothrow) nmath_runtime_internal();
     if (*rt == nullptr)
     {
       return nmath_err_failed_alloc;
@@ -90,12 +93,40 @@ enum NMath_Error_Info nmath_runtime_create(const nmath_global_config_t *globals,
     return nmath_err_cannot_read_parts;
   }
 
+  runtime->tex_path += runtime->globals.lualatex_shm_dir;
+  runtime->tex_path += "/";
+  runtime->tex_path += runtime->globals.lualatex_job_name;
+  runtime->tex_path += ".tex";
+
+  runtime->out_pdf_path += runtime->globals.lualatex_shm_dir;
+  runtime->out_pdf_path += "/";
+  runtime->out_pdf_path += runtime->globals.lualatex_job_name;
+  runtime->out_pdf_path += ".pdf";
+
+  runtime->log_path += runtime->globals.lualatex_shm_dir;
+  runtime->log_path += "/";
+  runtime->log_path += runtime->globals.lualatex_job_name;
+  runtime->log_path += ".log";
+
+  runtime->latex_cmd_args = {
+    std::string(runtime->globals.lualatex_exe_path),
+    "-interaction=batchmode",
+    "-halt-on-error",
+    "-fmt=" + std::string(runtime->globals.lualatex_dump_path),
+    "-output-directory=" + std::string(runtime->globals.lualatex_shm_dir),
+    runtime->tex_path
+  };
+
+  runtime->page_renderer.set_render_hint(poppler::page_renderer::text_antialiasing);
+  runtime->page_renderer.set_image_format(poppler::image::format_argb32);
+
   return nmath_okay;
 }
 
 enum NMath_Error_Info nmath_runtime_destroy(nmath_runtime_t runtime)
 {
   runtime->font_mgr.reset();
+  delete runtime;
   return nmath_okay;
 }
 

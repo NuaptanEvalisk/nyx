@@ -12,6 +12,8 @@
 #include <poppler/cpp/poppler-image.h>
 #include <poppler/cpp/poppler-page-renderer.h>
 
+#include <ctime>
+
 static bool extract_geometry_from_log(const std::string &log,
                                       nmath_geometry_t *geo)
 {
@@ -41,7 +43,8 @@ static bool extract_geometry_from_log(const std::string &log,
 static NMath_Error_Info nmath_render_pdf_to_bitmap(
     const char* pdf_path,
     float scale_factor,
-    nmath_bitmap_t* out_bitmap)
+    nmath_bitmap_t* out_bitmap,
+    nmath_runtime_t runtime)
 {
   const auto doc = poppler::document::load_from_file(pdf_path);
   if (!doc)
@@ -49,7 +52,7 @@ static NMath_Error_Info nmath_render_pdf_to_bitmap(
     return nmath_err_invalid_pdf;
   }
 
-  poppler::page *page = doc->create_page(0);
+  const poppler::page *page = doc->create_page(0);
   if (!page)
   {
     return nmath_err_invalid_pdf;
@@ -57,10 +60,7 @@ static NMath_Error_Info nmath_render_pdf_to_bitmap(
 
   const double dpi = 72.0 * scale_factor;
 
-  poppler::page_renderer renderer;
-  renderer.set_render_hint(poppler::page_renderer::text_antialiasing);
-  renderer.set_image_format(poppler::image::format_argb32);
-  poppler::image img = renderer.render_page(page, dpi, dpi);
+  poppler::image img = runtime->page_renderer.render_page(page, dpi, dpi);
 
   if (!img.is_valid())
   {
@@ -87,63 +87,56 @@ static NMath_Error_Info nmath_render_pdf_to_bitmap(
   return nmath_okay;
 }
 
+inline double get_ms(const struct timespec start, const struct timespec end)
+{
+  return static_cast<double>(end.tv_sec - start.tv_sec) * 1000.0 +
+         static_cast<double>(end.tv_nsec - start.tv_nsec) / 1000000.0;
+}
+
 enum NMath_Error_Info nmath_render_quality(const char *formula,
                                            const enum NMath_Formula_Type ft,
                                            nmath_bitmap_t *bitmap,
                                            nmath_geometry_t *geometry,
                                            nmath_runtime_t runtime)
 {
+  struct timespec t0, t1;
+
   if (formula == nullptr || geometry == nullptr || runtime == nullptr)
   {
     return nmath_err_null_check;
   }
 
-  std::string tex_path, out_pdf_path, log_path;
-
-  tex_path += runtime->globals.lualatex_shm_dir;
-  tex_path += "/";
-  tex_path += runtime->globals.lualatex_job_name;
-  tex_path += ".tex";
-
-  out_pdf_path += runtime->globals.lualatex_shm_dir;
-  out_pdf_path += "/";
-  out_pdf_path += runtime->globals.lualatex_job_name;
-  out_pdf_path += ".pdf";
-
-  log_path += runtime->globals.lualatex_shm_dir;
-  log_path += "/";
-  log_path += runtime->globals.lualatex_job_name;
-  log_path += ".log";
-
+  clock_gettime(CLOCK_MONOTONIC, &t0);
   {
-    std::ofstream ofs(tex_path, std::ios::trunc);
+    std::ofstream ofs(runtime->tex_path, std::ios::trunc);
     if (!ofs.is_open())
     {
       return nmath_err_file;
     }
 
     ofs << runtime->latex_head_content;
-    ofs << (ft == nmath_formula_inline ? "$" : "\n$$\n");
+    ofs << (ft == nmath_formula_inline ? "$" : "$\\displaystyle ");
     ofs << formula;
-    ofs << (ft == nmath_formula_inline ? "$" : "\n$$\n");
+    ofs << "$";
     ofs << runtime->latex_tail_content;
   }
+  clock_gettime(CLOCK_MONOTONIC, &t1);
+  std::cout << "Construction of mwe: " << get_ms(t0, t1) << " ms" << std::endl;
 
-  std::string cmd = "lualatex -interaction=batchmode -halt-on-error "
-                    "-fmt=" + std::string(runtime->globals.lualatex_dump_path) + " "
-                    "-output-directory=" + runtime->globals.lualatex_shm_dir + " "
-                    + tex_path + " > /dev/null 2>&1";
-
-  if (const int ret = std::system(cmd.c_str()); ret != 0)
+  clock_gettime(CLOCK_MONOTONIC, &t0);
+  if (!nmath_spawn_pdflatex(runtime->latex_cmd_args))
   {
     return nmath_err_lualatex_failure;
   }
-  if (!extract_geometry_from_log(log_path, geometry))
-  {
-    return nmath_err_geom_extraction;
-  }
+  clock_gettime(CLOCK_MONOTONIC, &t1);
+  std::cout << "Exec of pdflatex: " << get_ms(t0, t1) << " ms" << std::endl;
 
+  clock_gettime(CLOCK_MONOTONIC, &t0);
   const NMath_Error_Info e = nmath_render_pdf_to_bitmap(
-      out_pdf_path.c_str(), runtime->globals.pdf_scale_factor, bitmap);
+      runtime->out_pdf_path.c_str(), runtime->globals.pdf_scale_factor, bitmap,
+      runtime);
+  clock_gettime(CLOCK_MONOTONIC, &t1);
+  std::cout << "Poppler reading pixels: " << get_ms(t0, t1) << " ms" << std::endl;
+
   return e;
 }

@@ -6,11 +6,12 @@
 #define NYX_NMATH_INTERNALS_HPP
 
 #include "nmath/nmath.h"
-
 #include <graphic/graphic.h>
 #include <include/core/SkCanvas.h>
 #include <include/core/SkFontMgr.h>
 #include <include/core/SkRefCnt.h>
+#include <poppler/cpp/poppler-page-renderer.h>
+#include <vector>
 
 #define NMATH_DEBUG_OUTPUTS
 #ifdef NMATH_DEBUG_OUTPUTS
@@ -22,6 +23,8 @@
 #define debug_info_msg(msg)
 #endif
 
+bool nmath_spawn_pdflatex(const std::vector<std::string> &args);
+
 struct nmath_runtime_internal
 {
   nmath_global_config_t globals;
@@ -29,6 +32,11 @@ struct nmath_runtime_internal
 
   std::string latex_head_content;
   std::string latex_tail_content;
+
+  std::string tex_path, out_pdf_path, log_path;
+  std::vector<std::string> latex_cmd_args;
+
+  poppler::page_renderer page_renderer;
 };
 
 extern thread_local SkFontMgr *g_tls_font_mgr;

@@ -2,31 +2,14 @@
 // Created by felix on 2/19/26.
 //
 
-#include "nmath/nmath.h"
+#include "nmath_test_internals.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-void err_proc(enum NMath_Error_Info e)
-{
-  if (e != nmath_okay)
-  {
-    const char *estr = nmath_explain_err(e);
-    printf("NLayout error: %s\n", estr);
-    fflush(stdout);
-    exit(EXIT_FAILURE);
-  }
-}
-
-double get_ms(const struct timespec start, const struct timespec end)
-{
-  return (double)(end.tv_sec - start.tv_sec) * 1000.0 +
-         (double)(end.tv_nsec - start.tv_nsec) / 1000000.0;
-}
 
 int main(void)
 {
@@ -43,6 +26,14 @@ int main(void)
   globals.microtex_res_path = "../../res";
   globals.scan_system_fonts = true;
   globals.width_allowed = 200;
+  globals.lualatex_exe_path = "/usr/bin/lualatex";
+  globals.lualatex_shm_dir = "/dev/shm/nyx/";
+  system("mkdir -p /dev/shm/nyx/");
+  globals.lualatex_job_name = "nmath-demo-job";
+  globals.tex_fmt_source_path = "../../assets/latex/nmath_latex_fmt.tex";
+  globals.tex_head_path = "../../assets/latex/nmath_latex_head.tex";
+  globals.tex_tail_path = "../../assets/latex/nmath_latex_tail.tex";
+  globals.lualatex_dump_path = "/dev/shm/nyx/preload.fmt";
   enum NMath_Error_Info e = nmath_runtime_create(&globals, &runtime);
   err_proc(e);
   clock_gettime(CLOCK_MONOTONIC, &t1);

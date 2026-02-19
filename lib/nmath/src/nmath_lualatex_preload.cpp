@@ -15,10 +15,11 @@ std::string generate_ini_command(nmath_runtime_t runtime)
   const std::string job_name = dump_path.stem().string();
   const std::string source_tex = runtime->globals.tex_fmt_source_path;
 
-  std::string cmd = "lualatex -ini -interaction=nonstopmode -halt-on-error "
+  std::string cmd = "" +std::string(runtime->globals.lualatex_exe_path) +
+                    " -ini -interaction=nonstopmode -halt-on-error "
                     "-jobname=" + job_name + " "
                     "-output-directory=" + output_dir + " "
-                    "\"&lualatex\" " + source_tex;
+                    "\"&pdflatex\" " + source_tex + " > /dev/null 2>&1";
   return cmd;
 }
 
