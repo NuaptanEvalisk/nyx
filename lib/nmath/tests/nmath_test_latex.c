@@ -28,6 +28,7 @@ int main(void)
   globals.tex_fmt_mini_path = "../../assets/latex/nmath_latex_mini_fmt.tex";
   globals.tex_head_path = "../../assets/latex/nmath_latex_head.tex";
   globals.tex_tail_path = "../../assets/latex/nmath_latex_tail.tex";
+  globals.tex_minimal_map_path = "../../assets/latex/minimal.mapfile";
   globals.latex_dump_path = "/dev/shm/nyx/preload.fmt";
   globals.latex_dump_mini_path = "/dev/shm/nyx/preload_mini.fmt";
   globals.pdf_scale_factor = 3.0f;

@@ -17,7 +17,8 @@ X(nmath_err_lualatex_fmt_missing) \
 X(nmath_err_cannot_read_parts) \
 X(nmath_err_lualatex_failure) \
 X(nmath_err_geom_extraction) \
-X(nmath_err_invalid_pdf)
+X(nmath_err_invalid_pdf) \
+X(nmath_err_minimal_map)
 
 #define GENERATE_ENUM(ENUM) ENUM,
 enum NMath_Error_Info

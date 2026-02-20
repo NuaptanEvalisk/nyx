@@ -78,6 +78,7 @@ set(NMATH_LATEX_ASSETS
         "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_head.tex"
         "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_tail.tex"
         "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/nmath_latex_mini_fmt.tex"
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/latex/minimal.mapfile"
 )
 
 file(COPY ${NMATH_LATEX_ASSETS} DESTINATION "${CMAKE_BINARY_DIR}/assets/latex")

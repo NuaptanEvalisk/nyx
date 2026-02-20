@@ -38,6 +38,26 @@ std::string generate_ini_command_mini(nmath_runtime_t runtime)
   return cmd;
 }
 
+static bool copy_minimal_map(nmath_runtime_t runtime)
+{
+  if (runtime->globals.latex_shm_dir == nullptr ||
+    runtime->globals.tex_minimal_map_path == nullptr)
+  {
+    return false;
+  }
+
+  if (!std::filesystem::copy_file(
+          std::string(runtime->globals.tex_minimal_map_path),
+          std::string(runtime->globals.latex_shm_dir) + "/minimal.map",
+          std::filesystem::copy_options::overwrite_existing))
+  {
+    return false;
+  }
+  debug_info_msg("Copied " << std::string(runtime->globals.tex_minimal_map_path)
+    << " to " << std::string(runtime->globals.latex_shm_dir) << "/minimal.map");
+  return true;
+}
+
 enum NMath_Error_Info nmath_lualatex_precompile(nmath_runtime_t runtime)
 {
   if (runtime == nullptr || runtime->globals.latex_exe_path == nullptr ||
@@ -47,6 +67,11 @@ enum NMath_Error_Info nmath_lualatex_precompile(nmath_runtime_t runtime)
     runtime->globals.tex_tail_path == nullptr)
   {
     return nmath_err_null_check;
+  }
+
+  if (!copy_minimal_map(runtime))
+  {
+    return nmath_err_minimal_map;
   }
 
   const std::string cmd = generate_ini_command(runtime);

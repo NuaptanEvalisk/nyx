@@ -16,8 +16,21 @@
 \usepackage{tikz-cd}
 \usepackage{microtype}
 
+\usepackage{expl3}
+\ExplSyntaxOn
+\sys_load_backend:n {pdftex}
+\ExplSyntaxOff
+
 \pdfcompresslevel=0
 \pdfobjcompresslevel=0
 \nofiles
 
+\pdfmapfile{}
+\pdfmapfile{=/dev/shm/nyx/minimal.map}
+
+\setbox0=\hbox{
+    \normalfont a
+    $a_{a_{a}}$
+    $\mathbf{a} \mathbb{A} \mathscr{A}$
+}
 \dump

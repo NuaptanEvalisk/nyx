@@ -36,6 +36,7 @@ int main(void)
   globals.tex_tail_path = "../../assets/latex/nmath_latex_tail.tex";
   globals.latex_dump_path = "/dev/shm/nyx/preload.fmt";
   globals.latex_dump_mini_path = "/dev/shm/nyx/preload_mini.fmt";
+  globals.tex_minimal_map_path = "../../assets/latex/minimal.mapfile";
   enum NMath_Error_Info e = nmath_runtime_create(&globals, &runtime);
   err_proc(e);
   clock_gettime(CLOCK_MONOTONIC, &t1);

@@ -5,12 +5,25 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{lmodern}
-\usepackage{gensymb}
 \usepackage{mathrsfs}
 \usepackage{bbold}
+
+\usepackage{expl3}
+\ExplSyntaxOn
+\sys_load_backend:n {pdftex}
+\ExplSyntaxOff
 
 \pdfcompresslevel=0
 \pdfobjcompresslevel=0
 \nofiles
 
+\pdfmapfile{}
+\pdfmapfile{=/dev/shm/nyx/minimal.map}
+
+\setbox0=\hbox{
+    \normalfont a
+    $a_{a_{a}}$
+    $\mathbf{a} \mathbb{A} \mathscr{A}$
+    $\pi \Sigma \Omega \cong \oplus \widetilde{H} \ast \cap \longrightarrow$
+}
 \dump

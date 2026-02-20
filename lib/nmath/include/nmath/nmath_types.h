@@ -26,6 +26,7 @@ extern "C"
     char *latex_dump_path;
     char *tex_fmt_mini_path;
     char *latex_dump_mini_path;
+    char *tex_minimal_map_path;
 
     char *latex_shm_dir;
     char *latex_job_name;

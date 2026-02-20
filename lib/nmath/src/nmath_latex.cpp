@@ -102,7 +102,12 @@ enum NMath_Error_Info nmath_render_quality(const char *formula,
                f.find("draw") != std::string::npos ||
                f.find("includegraphics") != std::string::npos ||
                f.find("color") != std::string::npos ||
-               f.find("xlongequal") != std::string::npos;
+               f.find("xlongequal") != std::string::npos ||
+               f.find("degree") != std::string::npos ||
+               f.find("celsius") != std::string::npos ||
+               f.find("ohm") != std::string::npos ||
+               f.find("perthousand") != std::string::npos ||
+               f.find("micro") != std::string::npos;
 
   std::cout << "Routing: " << (heavy ? "heavy" : "mini") << std::endl;
 
