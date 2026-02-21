@@ -49,3 +49,4 @@ target_compile_definitions(nlayout_test PRIVATE
 file(COPY "${CMAKE_SOURCE_DIR}/third_party/micro_tex/res" DESTINATION "${CMAKE_BINARY_DIR}")
 
 add_subdirectory(lib/nmath)
+add_subdirectory(lib/nyxfs)
