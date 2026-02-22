@@ -2,7 +2,8 @@ add_library(nyxfs SHARED
         include/nyxfs/nyxfs.h
         include/nyxfs/nyxfs_types.h
         include/nyxfs/nyxfs_err_list.h
-        src/nyxfs_mgmt.cpp)
+        src/nyxfs_mgmt.cpp
+        src/nyxfs_internals.hpp)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(nyxfs PRIVATE
