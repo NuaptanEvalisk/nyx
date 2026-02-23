@@ -9,7 +9,10 @@
 X(nyxfs_okay) \
 X(nyxfs_err_null_check) \
 X(nyxfs_err_file) \
-X(nyxfs_err_failed_alloc)
+X(nyxfs_err_failed_malloc) \
+X(nyxfs_err_failed_nalloc) \
+X(nyxfs_err_invalid_arena) \
+X(nyxfs_err_node_creation_failure)
 
 #define GENERATE_ENUM(ENUM) ENUM,
 enum NyxFS_Error_Info

@@ -6,6 +6,7 @@
 #define NYX_NYXFS_TYPES_H
 
 #include <stdint.h> // NOLINT(*-deprecated-headers)
+#include <stddef.h> // NOLINT(*-deprecated-headers)
 
 #if defined(__cplusplus)
 extern "C"
@@ -16,10 +17,10 @@ extern "C"
   // are nodes in the AST as in nodes for lists and containers. nodes are loaded
   // and possibly, expanded (parsed), in a lazy, or even heuristic, manner.
   // we aim to design the memory layout in a compact way that with hardware in
-  // mind and user in mind, the user being `nlayout`, our typesetting VM.
-  // observe that in Obsidian-flavored Markdown, the structure is rather flat,
-  // factually it should be little token streams attached to an AST tree
-  // expressing the ordered-set structures.
+  // mind and user in mind, the user being the S-exp generator which will send
+  // typesetting commands to Emacs frontend. observe that in Obsidian-flavored
+  // Markdown, the structure is rather flat, factually it should be little token
+  // streams attached to an AST tree expressing the ordered-set structures.
 
   enum NyxFS_Node_Type
   {
@@ -31,21 +32,21 @@ extern "C"
     nyxfs_node_list,
     nyxfs_node_table,
     nyxfs_node_table_cell,
+    nyxfs_node_temp // for intermediate processing
   };
 
   // we will maintain a global symbol table for namespace titles.
   // a directory is a namespace, a physical file is a namespace.
+  // we will change this to an actual offset some time when mmap is needed.
   struct nyxfs_namespace_data
   {
     char *symb_offset;
-    uint16_t length;
   };
 
   // we will maintain a global arena for raw data.
   struct nyxfs_raw_data
   {
     char *text_offset;
-    uint32_t length;
   };
 
   // to support lazy loading/parsing.
@@ -86,6 +87,12 @@ extern "C"
     uint16_t tok_count;
   };
 
+  struct nyxfs_temp_data
+  {
+    char *begin;
+    uint16_t length;
+  };
+
   // each container has two sections of children: header and body.
   // a callout is a container. a blockquote is a container.
   struct nyxfs_container_data
@@ -99,23 +106,24 @@ extern "C"
   // with the tokens. unions are generally easier to manage.
   union nyxfs_node_data_u
   {
-    nyxfs_namespace_data namespace_data;
-    nyxfs_raw_data raw_data;
-    nyxfs_lazy_data lazy_data;
-    nyxfs_list_data list_data;
-    nyxfs_table_data table_data;
-    nyxfs_stream_data stream_data;
-    nyxfs_container_data container_data;
+    struct nyxfs_namespace_data namespace_data;
+    struct nyxfs_raw_data raw_data;
+    struct nyxfs_lazy_data lazy_data;
+    struct nyxfs_list_data list_data;
+    struct nyxfs_table_data table_data;
+    struct nyxfs_stream_data stream_data;
+    struct nyxfs_container_data container_data;
+    struct nyxfs_temp_data temp_data;
   };
 
   typedef struct nyxfs_node
   {
-    nyxfs_node *parent;
-    nyxfs_node *first_child;
-    nyxfs_node *next_sibling;
+    struct nyxfs_node *parent;
+    struct nyxfs_node *first_child;
+    struct nyxfs_node *next_sibling;
 
     NyxFS_Node_Type type;
-    nyxfs_node_data_u data;
+    union nyxfs_node_data_u data;
   } nyxfs_node_t;
 
   // fat node this is.
@@ -155,13 +163,20 @@ extern "C"
   // performance. hence this rather compact memory layout should be CPU-friendly
   typedef struct nyxfs_token
   {
-    void *data_begin;
     NyxFS_Token_Type type;
     uint32_t data_length;
   } nyxfs_token_t;
 
-  // roughly, 4 tokens nicely cached by CPU at once.
-  static_assert(sizeof(nyxfs_token_t) == 16, "nyxfs_token should occupy 16 bytes");
+  // roughly, 8 tokens nicely cached by CPU at once.
+  static_assert(sizeof(nyxfs_token_t) == 8, "nyxfs_token should occupy 8 bytes");
+
+  // a symbol table is a special type of arena, just with void* being char*.
+  typedef struct nyxfs_arena
+  {
+    void *beginning;
+    void *top;
+    size_t size;
+  } nyxfs_arena_t;
 
 #if defined(__cplusplus)
 }
