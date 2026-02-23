@@ -19,6 +19,8 @@ void *nyxfs_arena_next(const nyxfs_arena_t *arena, void *ptr, size_t s);
 
 void *nyxfs_arena_next_fast(void *ptr, size_t s);
 
+void *nyxfs_arena_append1(nyxfs_arena_t *arena, char c);
+
 void *nyxfs_arena_pad8(nyxfs_arena_t *arena);
 
 void *nyxfs_symbol_tab_register(const char *str, nyxfs_arena_t *arena);
@@ -39,6 +41,6 @@ NyxFS_Error_Info nyxfs_expand_namespace(nyxfs_arena_t* arena, nyxfs_arena_t* s_t
 
 NyxFS_Error_Info nyxfs_expand_raw(nyxfs_arena_t* arena, nyxfs_arena_t* s_tab, nyxfs_node_t* node, bool lazy);
 
-NyxFS_Error_Info nyxfs_enstructure(nyxfs_arena_t *arena, nyxfs_arena_t *s_tab, nyxfs_node_t *node);
+NyxFS_Error_Info nyxfs_enstructure(nyxfs_arena_t *arena, nyxfs_node_t *node);
 
 #endif // NYX_NYXFS_INTERNALS_HPP

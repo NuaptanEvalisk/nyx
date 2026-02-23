@@ -84,6 +84,15 @@ void *nyxfs_arena_next_fast(void *ptr, const size_t s)
   return static_cast<char *>(ptr) + NYXFS_ALIGN8(s);
 }
 
+__attribute__((always_inline))
+void *nyxfs_arena_append1(nyxfs_arena_t *arena, const char c)
+{
+  auto t = static_cast<char *>(arena->top);
+  *++t = c;
+  arena->top = t;
+  return t;
+}
+
 // no check would be conducted for the following functions for we are concerned
 // with their speed. the following function must be called after filling data
 // into the arena manually.

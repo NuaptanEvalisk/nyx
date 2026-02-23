@@ -64,6 +64,10 @@ extern "C"
   // "3.", or its logical-child, e.g. "4.1." (TAB 1.) after "4." item. this is
   // basically just recursive representation of a list. for a (sub)list, its
   // sibling does not belong to this (sub)list.
+  //    list
+  //     |
+  //     |---------|
+  //   sublist   content
   struct nyxfs_list_data
   {
     uint8_t depth;
